@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <random>
 #include <sstream>
 #include <stdint.h>
 #include <stdio.h>
@@ -17,14 +18,14 @@
 
 #define ADD 0x00
 int ram_size;
-uint16_t reg[19] = {0};
+uint16_t reg[20] = {0};
 const char *program;
 char *ram;
 bool halted = false;
-char *regnames[19] = {"PC",    "AR",      "res",   "res",   "REG_D",
-                      "REG_E", "REG_F",   "res",   "res",   "STDOUT",
-                      "REG_A", "REG_B",   "REG_C", "IPORT", "OPORT",
-                      "FLAG",  "RET_POS", "REG_G", "REG_H"};
+const char *regnames[20] = {"PC",    "AR",      "res",   "res",   "REG_D",
+                            "REG_E", "REG_F",   "res",   "res",   "STDOUT",
+                            "REG_A", "REG_B",   "REG_C", "IPORT", "OPORT",
+                            "FLAG",  "RET_POS", "REG_G", "REG_H", "RAMSIZE"};
 SDL_Renderer *renderer;
 TTF_Font *font;
 
@@ -70,8 +71,8 @@ void draw_thread_func() {
   SDL_RenderClear(renderer);
 
   char *reg_text = new char[64]();
-  for (int i = 0; i < 19; i++) {
-    sprintf(reg_text, "%s %04X", regnames[i], (unsigned char)reg[i]);
+  for (int i = 0; i < sizeof(reg) / 2; i++) {
+    sprintf(reg_text, "%s %04X", regnames[i], reg[i]);
     renderFont(0, i * 24, font, {255, 255, 255, 255}, renderer, reg_text);
   }
   delete[] reg_text;
@@ -266,6 +267,32 @@ void tick() {
   case 0x12:
     reg[0] = reg[0x10];
     break;
+  case 0x13: {
+    reg[0]++;
+    char src_reg_a = program[reg[0]];
+    reg[0]++;
+    char src_reg_b = program[reg[0]];
+    uint16_t reg_a_prev = reg[src_reg_a];
+    reg[src_reg_a] = reg[src_reg_b];
+    reg[src_reg_b] = reg_a_prev;
+    break;
+  }
+  case 0x14: {
+    reg[0]++;
+    char src_reg_a = program[reg[0]];
+    reg[0]++;
+    char src_reg_b = program[reg[0]];
+    reg[0x01] = reg[src_reg_a] * reg[src_reg_b];
+    break;
+  }
+  case 0x15: {
+    reg[0]++;
+    char src_reg_a = program[reg[0]];
+    reg[0]++;
+    char src_reg_b = program[reg[0]];
+    reg[0x01] = reg[src_reg_a] / reg[src_reg_b];
+    break;
+  }
   }
 
   if (reg[0x09] != 0) {
@@ -276,7 +303,7 @@ void tick() {
 }
 
 int main() {
-  ram_size = 0;
+  ram_size = 1024;
   ram = new char[ram_size + 4096]();
 
   std::string programstr = readFileToString("flash.bin");
@@ -326,6 +353,8 @@ int main() {
   SDL_Event event;
   uint16_t framecnt;
 
+  reg[19] = ram_size;
+
   while (!halted) {
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) {
@@ -333,13 +362,13 @@ int main() {
       }
     }
     tick();
-    if (framecnt % 1000 == 0) {
+    if (framecnt % 1 == 0) {
       draw_thread_func();
       framecnt = 0;
     }
     framecnt++;
   }
-  
+
   draw_thread_func();
 
   SDL_Delay(5000);
