@@ -69,7 +69,7 @@ void tick() {
     reg[0]++;
     char src2 = program[reg[0]];
     uint16_t to_write = combine_chars(src1, src2);
-    reg[dest_reg] = program[to_write];  
+    reg[dest_reg] = program[to_write];
     break;
   }
   case 0x03: {
@@ -153,8 +153,18 @@ void tick() {
   }
   case 0x0C:
     break;
-  case 0x0D:
+  case 0x0D: {
+    reg[0]++;
+    char src_reg = program[reg[0]];
+    reg[0]++;
+    char src_reg_a = program[reg[0]];
+    reg[0]++;
+    char src_reg_b = program[reg[0]];
+    if (reg[src_reg_a] == reg[src_reg_b]) {
+      reg[0] = reg[src_reg];
+    }
     break;
+  }
   case 0x0E: {
     reg[0]++;
     char src_reg = program[reg[0]];
@@ -192,7 +202,6 @@ void tick() {
     reg[0x09] = 0;
   }
 }
-
 
 int main() {
   ram_size = 512;
