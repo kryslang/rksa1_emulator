@@ -320,7 +320,7 @@ int main() {
       }
     }
     tick();
-    if (framecnt % 200 == 0) {
+    if (framecnt % 1000 == 0) {
       draw_thread_func();
       framecnt = 0;
     }
