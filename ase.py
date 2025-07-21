@@ -1,6 +1,6 @@
 f=open("main.asm","r")
 f2=open("flash.bin","wb")
-ins=["ADD","SUB","REGWRITE","REGMOV","RAMW","RAMR","JMP","JPIE","JPIG","JPIS","INC","DEC","NOP\n","JPINE","BITSLEFT","HALT\n","BITSRIGHT","CALL","RET"]
+ins=["ADD","SUB","REGWRITE","REGMOV","RAMW","RAMR","JMP","JPIE","JPIG","JPIS","INC","DEC","NOP\n","JPINE","BITSLEFT","HALT\n","BITSRIGHT","CALL","RET","REGSWAP"]
 buff=""
 buffc1=""
 buffc2=""
@@ -20,7 +20,10 @@ def writ(buff):
 	f2.write(s.to_bytes(1,"big"))
 		
 nextli=False
-inse=0	
+inse=0
+lablist=[]
+cordlist=[]
+orn=0
 for i in f.readlines():
 	n=0
 	if(n>=len(i)):
@@ -42,9 +45,16 @@ for i in f.readlines():
 		if(n>=len(i)):
 			nextli=True
 			break
-			
+	orn+=1
 	print(buff,"hello")	
-	writ(buff)
+	#print(buff[len(buff)-2],"maamamaa,mamamammammamm")
+	if(buff[len(buff)-2]==':'):
+		lablist.append(buff.replace(":",""))
+		cordlist.append(orn)
+		f2.write((12).to_bytes(1,"big"))
+		print(lablist,cordlist)
+	else:
+		writ(buff)
 	n+=1
 	if(nextli):
 		continue
@@ -55,10 +65,17 @@ for i in f.readlines():
 		if(n>=len(i)):
 			nextli=True
 			break
-			
+	orn+=1
 	n+=1
 	print(buffc1, inse)
-	f2.write(int(buffc1,16).to_bytes(1, "big"))
+	if(buffc1[0]=='0'):
+		f2.write(int(buffc1,16).to_bytes(1, "big"))
+	elif(buffc1[0]=="'"):
+		f2.write(bytes(buffc2[1], "utf-8"))
+	else:
+		for h in range(0,len(lablist)):
+			if(buffc1==lablist[h]):
+				f2.write((cordlist[h]).to_bytes(1, "big"))
 	if(nextli):
 		continue
 	
@@ -68,11 +85,16 @@ for i in f.readlines():
 		if(n==len(i)):
 			nextli=True
 			break
+	orn+=1
 	n+=1
-	if(buffc2[0]=="'"):
+	if(buffc1[0]=='0'):
+		f2.write(int(buffc1,16).to_bytes(1, "big"))
+	elif(buffc1[0]=="'"):
 		f2.write(bytes(buffc2[1], "utf-8"))
 	else:
-		f2.write(int(buffc2,16).to_bytes(1, "big"))
+		for h in range(0,len(lablist)):
+			if(buffc1==lablist[h]):
+				f2.write((cordlist[h]).to_bytes(1, "big"))
 	print(buff,"ahoj",buffc1, buffc2)
 	if(nextli):
 		continue
@@ -82,13 +104,17 @@ for i in f.readlines():
 		if(n>=len(i)):
 			nextli=True
 			break
-			
+	orn+=1
 	n+=1
 	print(buffc3, inse)
-	if(buffc3[0]=="'"):
-		f2.write(bytes(buffc3[1], "utf-8"))
+	if(buffc1[0]=='0'):
+		f2.write(int(buffc1,16).to_bytes(1, "big"))
+	elif(buffc1[0]=="'"):
+		f2.write(bytes(buffc2[1], "utf-8"))
 	else:
-		f2.write(int(buffc3,16).to_bytes(1, "big"))
+		for h in range(0,len(lablist)):
+			if(buffc1==lablist[h]):
+				f2.write((cordlist[h]).to_bytes(1, "big"))
 	if(nextli):
 		continue
 		
@@ -98,13 +124,17 @@ for i in f.readlines():
 		if(n>=len(i)):
 			nextli=True
 			break
-			
+	orn+=1
 	n+=1
 	print(buffc4, inse)
-	if(buffc2[0]=="'"):
-		f2.write(bytes(buffc4[1], "utf-8"))
+	if(buffc1[0]=='0'):
+		f2.write(int(buffc1,16).to_bytes(1, "big"))
+	elif(buffc1[0]=="'"):
+		f2.write(bytes(buffc2[1], "utf-8"))
 	else:
-		f2.write(int(buffc4,16).to_bytes(1, "big"))
+		for h in range(0,len(lablist)):
+			if(buffc1==lablist[h]):
+				f2.write((cordlist[h]).to_bytes(1, "big"))
 	if(nextli):
 		continue
 	inse+=1
