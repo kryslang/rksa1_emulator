@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
+#include <sys/types.h>
 #include <thread>
 
 #define ADD 0x00
@@ -141,6 +142,7 @@ void tick() {
     char src1 = program[reg[0]];
     reg[0]++;
     char src2 = program[reg[0]];
+    std::cout << "dest_reg: " <<  (uint16_t)dest_reg << " src1: " << (uint16_t)src1 << " src2: " << (uint16_t)src2 << std::endl;
     uint16_t to_write = combine_chars(src1, src2);
     reg[dest_reg] = to_write;
     break;
@@ -275,6 +277,8 @@ void tick() {
     uint16_t reg_a_prev = reg[src_reg_a];
     reg[src_reg_a] = reg[src_reg_b];
     reg[src_reg_b] = reg_a_prev;
+    std::cout << "a prev: " << reg_a_prev << " reg b: " << reg[src_reg_b]
+              << "reb a: " << reg[src_reg_a] << std::endl;
     break;
   }
   case 0x14: {
@@ -362,7 +366,7 @@ int main() {
       }
     }
     tick();
-    if (framecnt % 1 == 0) {
+    if (framecnt % 999 == 0) {
       draw_thread_func();
       framecnt = 0;
     }
