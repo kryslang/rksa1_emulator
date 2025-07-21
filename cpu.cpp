@@ -198,7 +198,7 @@ int main() {
   ram_size = 512;
   ram = new char[ram_size + 4096]();
 
-  std::string programstr = readFileToString("program.bin");
+  std::string programstr = readFileToString("flash.bin");
   program = programstr.c_str();
 
   while (!halted) {

@@ -266,7 +266,7 @@ int main() {
   ram_size = 0;
   ram = new char[ram_size + 4096]();
 
-  std::string programstr = readFileToString("o.bin");
+  std::string programstr = readFileToString("flash.bin");
   program = programstr.c_str();
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
