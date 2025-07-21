@@ -1,5 +1,5 @@
 f=open("main.asm","r")
-f2=open("program.bin","wb")
+f2=open("flash.bin","wb")
 ins=["ADD","SUB","REGWRITE","REGMOV","RAMW","RAMR","JMP","JPIE","JPIG","JPIS","INC","DEC","NOP\n","JPINE","BITSLEFT","HALT\n","BITSRIGHT","CALL","RET"]
 buff=""
 buffc1=""
