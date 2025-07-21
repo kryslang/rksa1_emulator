@@ -82,6 +82,9 @@ void draw_thread_func() {
       SDL_RenderDrawPoint(renderer, x + 450, y + 50);
     }
   }
+  if (halted) {
+    renderFont(300, 10, font, {255, 0, 0, 255}, renderer, "Halted");
+  }
   SDL_RenderPresent(renderer);
 }
 
@@ -336,6 +339,8 @@ int main() {
     }
     framecnt++;
   }
+  
+  draw_thread_func();
 
   SDL_Delay(5000);
   SDL_DestroyRenderer(renderer);
