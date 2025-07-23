@@ -1,8 +1,5 @@
 # RKSA_Emulator
 
-veri gut
-hofen
-
 ## compiling
 
 ### emu.cpp:
