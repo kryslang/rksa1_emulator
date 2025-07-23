@@ -70,8 +70,11 @@ lablist = [
 	"ramsize",
 ]
 cordlist = [7, 8, 3, 2, 10, 11, 12, 4, 5, 6, 17, 18, 9, 0, 1, 13, 14, 15, 16, 19]
+lablist1=[]
+cordlist1=[]
 orn = 0
 for i in f.readlines():
+	drf=True
 	n = 0
 	if n >= len(i) - 1:
 		#nextli = True
@@ -95,8 +98,8 @@ for i in f.readlines():
 	# print(buff,"hello")
 	# print(buff[len(buff)-2],"maamamaa,mamamammammamm")
 	if buff[len(buff) - 1] == ":":
-		lablist.append(buff.replace(":", ""))
-		cordlist.append(orn)
+		lablist1.append(buff.replace(":", ""))
+		cordlist1.append(orn)
 		# ~ f2.write((12).to_bytes(1, "big"))
 		# ~ print((12))
 		print(lablist, cordlist)
@@ -121,11 +124,21 @@ for i in f.readlines():
 	# ~ elif buffc1[0] == "'":
 		# ~ f2.write(bytes(buffc1[1], "utf-8"))
 	# ~ else:
-	for h in range(0, len(lablist)):
-		if buffc1 == lablist[h]:
-			if h > 19:
-				#f2.write((cordlist[h] - 1).to_bytes(2, "big"))
-				orn+=1
+	if buffc1[0] == "0":
+		print()
+	elif buffc1[0] == "'":
+		print()
+	else:
+		for h in range(0, len(lablist)):
+			if buffc1 == lablist[h]:
+				drf=True
+				break
+			else:
+				drf=False
+		
+	if(not drf):
+		orn+=1
+		drf=False
 				# ~ else:
 					# ~ f2.write((cordlist[h]).to_bytes(1, "big"))
 				# ~ print(buffc1, cordlist[h])
@@ -141,11 +154,20 @@ for i in f.readlines():
 			break
 	orn += 1
 	n += 1
-	for h in range(0, len(lablist)):
-		if buffc2 == lablist[h]:
-			if h > 19:
-				#f2.write((cordlist[h] - 1).to_bytes(2, "big"))
-				orn+=1
+	if buffc2[0] == "0":
+		print()
+	elif buffc2[0] == "'":
+		print()
+	else:
+		for h in range(0, len(lablist)):
+			if buffc2 == lablist[h]:
+				drf=True
+				break
+			else:
+				drf=False
+	if(not drf):
+		orn+=1
+		drf=False
 	# ~ if buffc2[0] == "0":
 		# ~ f2.write(int(buffc2, 16).to_bytes(1, "big"))
 	# ~ elif buffc2[0] == "'":
@@ -170,11 +192,20 @@ for i in f.readlines():
 			break
 	orn += 1
 	n += 1
-	for h in range(0, len(lablist)):
-		if buffc3 == lablist[h]:
-			if h > 19:
-				#f2.write((cordlist[h] - 1).to_bytes(2, "big"))
-				orn+=1
+	if buffc3[0] == "0":
+		print()
+	elif buffc3[0] == "'":
+		print()
+	else:
+		for h in range(0, len(lablist)):
+			if buffc3 == lablist[h]:
+				drf=True
+				break
+			else:
+				drf=False
+	if(not drf):
+		orn+=1
+		drf=False
 	# print(buffc3, inse)
 	# ~ if buffc3[0] == "0":
 		# ~ f2.write(int(buffc3, 16).to_bytes(1, "big"))
@@ -200,11 +231,20 @@ for i in f.readlines():
 			break
 	orn += 1
 	n += 1
-	for h in range(0, len(lablist)):
-		if buffc4 == lablist[h]:
-			if h > 19:
-				#f2.write((cordlist[h] - 1).to_bytes(2, "big"))
-				orn+=1
+	if buffc4[0] == "0":
+		print()
+	elif buffc4[0] == "'":
+		print()
+	else:
+		for h in range(0, len(lablist)):
+			if buffc4 == lablist[h]:
+				drf=True
+				break
+			else:
+				drf=False
+	if(not drf):
+		orn+=1
+		drf=False
 	# print(buffc4, inse)
 	# ~ if buffc4[0] == "0":
 		# ~ f2.write(int(buffc4, 16).to_bytes(1, "big"))
@@ -225,6 +265,9 @@ for i in f.readlines():
 	if nextli:
 		continue
 f.close()
+lablist+=lablist1
+cordlist+=cordlist1
+print(lablist,cordlist,"ooooooooo")
 f = open("main.asm", "r")
 for i in f.readlines():
 	n = 0
