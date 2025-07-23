@@ -1,6 +1,6 @@
 f=open("main.asm","r")
 f2=open("flash.bin","wb")
-ins=["ADD","SUB","REGWRITE","REGMOV","RAMW","RAMR","JMP","JPIE","JPIG","JPIS","INC","DEC","NOP\n","JPINE","BITSLEFT","HALT\n","BITSRIGHT","CALL","RET","REGSWAP", "MUL", "DIV"]
+ins=["ADD","SUB","REGWRITE","REGMOV","RAMW","RAMR","JMP","JPIE","JPIG","JPIS","INC","DEC","NOP\n","","BITSLEFT","HALT\n","BITSRIGHT","CALL","RET", "REGSWAP", "MUL", "DIV"]
 buff=""
 buffc1=""
 buffc2=""
@@ -85,7 +85,7 @@ for i in f.readlines():
 			
 	n+=1
 	print(buffc3, inse)
-	if(buffc3[0]=="'"):
+	if(buffc2[0]=="'"):
 		f2.write(bytes(buffc3[1], "utf-8"))
 	else:
 		f2.write(int(buffc3,16).to_bytes(1, "big"))
