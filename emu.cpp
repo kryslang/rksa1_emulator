@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
@@ -23,6 +25,7 @@ uint16_t reg[20] = {0};
 const char *program;
 char *ram;
 bool halted = false;
+bool arrowsPressed[4] = {0};
 const char *regnames[20] = {"PC",    "AR",      "res",   "res",   "REG_D",
                             "REG_E", "REG_F",   "res",   "res",   "STDOUT",
                             "REG_A", "REG_B",   "REG_C", "IPORT", "OPORT",
@@ -76,12 +79,21 @@ void draw_thread_func() {
     sprintf(reg_text, "%s %04X", regnames[i], reg[i]);
     renderFont(0, i * 24, font, {255, 255, 255, 255}, renderer, reg_text);
   }
+  renderFont(
+      500, 570, font, {255, 255, 255, 255}, renderer,
+      ("arrowkeys: " + std::to_string(arrowsPressed[0]) + std::to_string(arrowsPressed[1]) +
+       std::to_string(arrowsPressed[2]) + std::to_string(arrowsPressed[3]))
+          .c_str());
+  SDL_Rect r = {449, 49, 258, 258};
+  SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+  SDL_RenderDrawRect(renderer, &r);
   delete[] reg_text;
-  for (int y = 0; y < 64; y++) {
-    for (int x = 0; x < 64; x++) {
-      auto [r, g, b] = rgb323_to_rgb888(ram[(y * 64 + x) + ram_size]);
+  for (int y = 0; y < 256; y += 4) {
+    for (int x = 0; x < 256; x += 4) {
+      auto [r, g, b] = rgb323_to_rgb888(ram[(y / 4 * 64 + x / 4) + ram_size]);
       SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-      SDL_RenderDrawPoint(renderer, x + 450, y + 50);
+      SDL_Rect rect = {x + 450, y + 50, 4, 4};
+      SDL_RenderFillRect(renderer, &rect);
     }
   }
   if (halted) {
@@ -118,6 +130,23 @@ void tick() {
   // std::cout << std::hex << int{program[reg[0]]} << std::endl;
   reg[0]++;
 
+  if (arrowsPressed[0]) {
+    reg[0x0D] = 0x1111;
+  }
+  if (arrowsPressed[1]) {
+    reg[0x0D] = 0x2222;
+  }
+  if (arrowsPressed[2]) {
+    reg[0x0D] = 0x3333;
+  }
+  if (arrowsPressed[3]) {
+    reg[0x0D] = 0x4444;
+  }
+  if (!arrowsPressed[0] && !arrowsPressed[1] && !arrowsPressed[2] &&
+      !arrowsPressed[3]) {
+    reg[0x0D] = 0x00;
+  }
+
   switch (program[reg[0]]) {
   case 0x00: {
     reg[0]++;
@@ -142,7 +171,6 @@ void tick() {
     char src1 = program[reg[0]];
     reg[0]++;
     char src2 = program[reg[0]];
-    std::cout << "dest_reg: " <<  (uint16_t)dest_reg << " src1: " << (uint16_t)src1 << " src2: " << (uint16_t)src2 << std::endl;
     uint16_t to_write = combine_chars(src1, src2);
     reg[dest_reg] = to_write;
     break;
@@ -364,10 +392,39 @@ int main() {
       if (event.type == SDL_QUIT) {
         halted = true;
       }
+      if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.sym == SDLK_UP) {
+          arrowsPressed[0] = true;
+        }
+        if (event.key.keysym.sym == SDLK_LEFT) {
+          arrowsPressed[1] = true;
+        }
+        if (event.key.keysym.sym == SDLK_DOWN) {
+          arrowsPressed[2] = true;
+        }
+        if (event.key.keysym.sym == SDLK_RIGHT) {
+          arrowsPressed[3] = true;
+        }
+      }
+      if (event.type == SDL_KEYUP) {
+        if (event.key.keysym.sym == SDLK_UP) {
+          arrowsPressed[0] = false;
+        }
+        if (event.key.keysym.sym == SDLK_LEFT) {
+          arrowsPressed[1] = false;
+        }
+        if (event.key.keysym.sym == SDLK_DOWN) {
+          arrowsPressed[2] = false;
+        }
+        if (event.key.keysym.sym == SDLK_RIGHT) {
+          arrowsPressed[3] = false;
+        }
+      }
     }
     tick();
-    if (framecnt % 999 == 0) {
+    if (framecnt % 1 == 0) {
       draw_thread_func();
+      SDL_Delay(16);
       framecnt = 0;
     }
     framecnt++;
