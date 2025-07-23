@@ -26,12 +26,36 @@ const char *program;
 char *ram;
 bool halted = false;
 bool arrowsPressed[4] = {0};
+
 const char *regnames[20] = {"PC",    "AR",      "res",   "res",   "REG_D",
                             "REG_E", "REG_F",   "res",   "res",   "STDOUT",
                             "REG_A", "REG_B",   "REG_C", "IPORT", "OPORT",
                             "FLAG",  "RET_POS", "REG_G", "REG_H", "RAMSIZE"};
 SDL_Renderer *renderer;
 TTF_Font *font;
+
+enum regs {
+  PC = 0,
+  AR = 1,
+  REG_I = 2,
+  REG_J = 3,
+  REG_D = 4,
+  REG_E = 5,
+  REG_F = 6,
+  REG_K = 7,
+  REG_L = 8,
+  STDOUT = 9,
+  REG_A = 10,
+  REG_B = 11,
+  REG_C = 12,
+  IPORT = 13,
+  OPORT = 14,
+  FLAG = 15,
+  RET_POS = 16,
+  REG_G = 17,
+  REG_H = 18,
+  RAMSIZE = 19,
+};
 
 std::tuple<uint8_t, uint8_t, uint8_t> rgb323_to_rgb888(uint8_t rgb323) {
   // Vytáhneme jednotlivé komponenty
@@ -70,7 +94,7 @@ void renderFont(int x, int y, TTF_Font *font, SDL_Color clr,
   SDL_DestroyTexture(texture);
 }
 
-void draw_thread_func() {
+void draw() {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
@@ -423,14 +447,14 @@ int main() {
     }
     tick();
     if (framecnt % 10 == 0) {
-      draw_thread_func();
+      draw();
       SDL_Delay(16);
       framecnt = 0;
     }
     framecnt++;
   }
 
-  draw_thread_func();
+  draw();
 
   SDL_Delay(5000);
   SDL_DestroyRenderer(renderer);
