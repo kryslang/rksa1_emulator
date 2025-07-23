@@ -74,8 +74,8 @@ orn = 0
 for i in f.readlines():
 	n = 0
 	if n >= len(i) - 1:
-		nextli = True
-		break
+		#nextli = True
+		continue
 	buff = ""
 	buffc1 = ""
 	buffc2 = ""
@@ -213,8 +213,8 @@ f = open("main.asm", "r")
 for i in f.readlines():
 	n = 0
 	if n >= len(i) - 1:
-		nextli = True
-		break
+		#nextli = True
+		continue
 	buff = ""
 	buffc1 = ""
 	buffc2 = ""
