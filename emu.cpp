@@ -80,7 +80,7 @@ void draw_thread_func() {
     renderFont(0, i * 24, font, {255, 255, 255, 255}, renderer, reg_text);
   }
   renderFont(
-      500, 570, font, {255, 255, 255, 255}, renderer,
+      450, 300, font, {255, 255, 255, 255}, renderer,
       ("arrowkeys: " + std::to_string(arrowsPressed[0]) + std::to_string(arrowsPressed[1]) +
        std::to_string(arrowsPressed[2]) + std::to_string(arrowsPressed[3]))
           .c_str());
@@ -422,7 +422,7 @@ int main() {
       }
     }
     tick();
-    if (framecnt % 1 == 0) {
+    if (framecnt % 10 == 0) {
       draw_thread_func();
       SDL_Delay(16);
       framecnt = 0;
