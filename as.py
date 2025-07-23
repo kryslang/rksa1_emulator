@@ -1,28 +1,28 @@
 f = open("main.asm", "r")
 f2 = open("flash.bin", "wb")
 ins = [
-    "ADD",
-    "SUB",
-    "REGWRITE",
-    "REGMOV",
-    "RAMW",
-    "RAMR",
-    "JMP",
-    "JPIE",
-    "JPIG",
-    "JPIS",
-    "INC",
-    "DEC",
-    "NOP",
-    "JPINE",
-    "BITSLEFT",
-    "HALT",
-    "BITSRIGHT",
-    "CALL",
-    "RET",
-    "REGSWAP",
-    "MUL",
-    "DIV",
+    "add",
+    "sub",
+    "regwrite",
+    "regmov",
+    "ramw",
+    "ramr",
+    "jmp",
+    "jpie",
+    "jpig",
+    "jpis",
+    "inc",
+    "dec",
+    "nop",
+    "jpine",
+    "bitsleft",
+    "halt",
+    "bitsright",
+    "call",
+    "ret",
+    "regswap",
+    "mul",
+    "div",
 ]
 buff = ""
 buffc1 = ""
@@ -67,10 +67,34 @@ lablist = [
     "oport",
     "flag",
     "call",
-    "ramsize",
+	"ramsize",
 ]
 cordlist = [7, 8, 3, 2, 10, 11, 12, 4, 5, 6, 17, 18, 9, 0, 1, 13, 14, 15, 16, 19]
 orn = 0
+for i in f.readlines():
+    n = 0
+    if n >= len(i) - 1:
+        nextli = True
+        break
+    while not (i[n] == " " or i[n] == "\n"):
+        buff += i[n]
+        n += 1
+        # print(n,"f", inse)
+        if n >= len(i) - 1:
+            nextli = True
+            break
+    orn += 1
+    # print(buff,"hello")
+    # print(buff[len(buff)-2],"maamamaa,mamamammammamm")
+    if buff[len(buff) - 1] == ":":
+        lablist.append(buff.replace(":", ""))
+        cordlist.append(orn)
+        #f2.write((12).to_bytes(1, "big"))
+        print((12))
+        print(lablist, cordlist, buff)
+    buff=""
+f.close()
+f = open("main.asm", "r")
 for i in f.readlines():
     n = 0
     if n >= len(i) - 1:
@@ -95,8 +119,8 @@ for i in f.readlines():
     # print(buff,"hello")
     # print(buff[len(buff)-2],"maamamaa,mamamammammamm")
     if buff[len(buff) - 1] == ":":
-        lablist.append(buff.replace(":", ""))
-        cordlist.append(orn + 1)
+        #lablist.append(buff.replace(":", ""))
+        #cordlist.append(orn + 1)
         f2.write((12).to_bytes(1, "big"))
         print((12))
         print(lablist, cordlist)
