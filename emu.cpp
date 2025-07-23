@@ -19,7 +19,6 @@
 #include <sys/types.h>
 #include <thread>
 
-#define ADD 0x00
 int ram_size;
 uint16_t reg[20] = {0};
 const char *program;
@@ -54,7 +53,31 @@ enum regs {
   RET_POS = 16,
   REG_G = 17,
   REG_H = 18,
-  RAMSIZE = 19,
+  RAMSIZE = 19
+};
+enum ops {
+  ADD = 0,
+  SUB = 1,
+  REGWRITE = 2,
+  REGMOV = 3,
+  RAMW = 4,
+  RAMR = 5,
+  JMP = 6,
+  JPIE = 7,
+  JPIG = 8,
+  JPIS = 9,
+  INC = 10,
+  DEC = 11,
+  NOP = 12,
+  JPINE = 13,
+  BITSL = 14,
+  HALT = 15,
+  BITSR = 16,
+  CALL = 17,
+  RET = 18,
+  REGSWAP = 19,
+  MUL = 20,
+  DIV = 21
 };
 
 std::tuple<uint8_t, uint8_t, uint8_t> rgb323_to_rgb888(uint8_t rgb323) {
@@ -103,11 +126,12 @@ void draw() {
     sprintf(reg_text, "%s %04X", regnames[i], reg[i]);
     renderFont(0, i * 24, font, {255, 255, 255, 255}, renderer, reg_text);
   }
-  renderFont(
-      450, 300, font, {255, 255, 255, 255}, renderer,
-      ("arrowkeys: " + std::to_string(arrowsPressed[0]) + std::to_string(arrowsPressed[1]) +
-       std::to_string(arrowsPressed[2]) + std::to_string(arrowsPressed[3]))
-          .c_str());
+  renderFont(450, 300, font, {255, 255, 255, 255}, renderer,
+             ("arrowkeys: " + std::to_string(arrowsPressed[0]) +
+              std::to_string(arrowsPressed[1]) +
+              std::to_string(arrowsPressed[2]) +
+              std::to_string(arrowsPressed[3]))
+                 .c_str());
   SDL_Rect r = {449, 49, 258, 258};
   SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
   SDL_RenderDrawRect(renderer, &r);
@@ -151,181 +175,181 @@ std::string readFileToString(const std::string &filename) {
 }
 
 void tick() {
-  // std::cout << std::hex << int{program[reg[0]]} << std::endl;
-  reg[0]++;
+  // std::cout << std::hex << int{program[reg[PC]]} << std::endl;
+  reg[PC]++;
 
   if (arrowsPressed[0]) {
-    reg[0x0D] = 0x1111;
+    reg[IPORT] = 0x1111;
   }
   if (arrowsPressed[1]) {
-    reg[0x0D] = 0x2222;
+    reg[IPORT] = 0x2222;
   }
   if (arrowsPressed[2]) {
-    reg[0x0D] = 0x3333;
+    reg[IPORT] = 0x3333;
   }
   if (arrowsPressed[3]) {
-    reg[0x0D] = 0x4444;
+    reg[IPORT] = 0x4444;
   }
   if (!arrowsPressed[0] && !arrowsPressed[1] && !arrowsPressed[2] &&
       !arrowsPressed[3]) {
-    reg[0x0D] = 0x00;
+    reg[IPORT] = 0x00;
   }
 
-  switch (program[reg[0]]) {
-  case 0x00: {
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
-    reg[0]++;
-    char src_reg_b = program[reg[0]];
-    reg[0x01] = reg[src_reg_a] + reg[src_reg_b];
+  switch (program[reg[PC]]) {
+  case ADD: {
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_b = program[reg[PC]];
+    reg[AR] = reg[src_reg_a] + reg[src_reg_b];
     break;
   }
-  case 0x01: {
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
-    reg[0]++;
-    char src_reg_b = program[reg[0]];
-    reg[0x01] = reg[src_reg_a] - reg[src_reg_b];
+  case SUB: {
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_b = program[reg[PC]];
+    reg[AR] = reg[src_reg_a] - reg[src_reg_b];
     break;
   }
-  case 0x02: {
-    reg[0]++;
-    char dest_reg = program[reg[0]];
-    reg[0]++;
-    char src1 = program[reg[0]];
-    reg[0]++;
-    char src2 = program[reg[0]];
+  case REGWRITE: {
+    reg[PC]++;
+    char dest_reg = program[reg[PC]];
+    reg[PC]++;
+    char src1 = program[reg[PC]];
+    reg[PC]++;
+    char src2 = program[reg[PC]];
     uint16_t to_write = combine_chars(src1, src2);
     reg[dest_reg] = to_write;
     break;
   }
-  case 0x03: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
-    reg[0]++;
-    char dst_reg = program[reg[0]];
+  case REGMOV: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
+    reg[PC]++;
+    char dst_reg = program[reg[PC]];
     reg[dst_reg] = reg[src_reg];
     break;
   }
-  case 0x04: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
+  case RAMW: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
     ram[reg[src_reg]] = reg[src_reg_a];
     break;
   }
-  case 0x05: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
-    reg[0]++;
-    char dst_reg = program[reg[0]];
+  case RAMR: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
+    reg[PC]++;
+    char dst_reg = program[reg[PC]];
     reg[dst_reg] = ram[reg[src_reg]];
     break;
   }
-  case 0x06: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
-    reg[0] = reg[src_reg];
+  case JMP: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
+    reg[PC] = reg[src_reg];
     break;
   }
-  case 0x07: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
-    reg[0]++;
-    char src_reg_b = program[reg[0]];
+  case JPIE: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_b = program[reg[PC]];
     if (reg[src_reg_a] == reg[src_reg_b]) {
-      reg[0] = reg[src_reg];
+      reg[PC] = reg[src_reg];
     }
     break;
   }
-  case 0x08: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
-    reg[0]++;
-    char src_reg_b = program[reg[0]];
+  case JPIG: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_b = program[reg[PC]];
     if (reg[src_reg_a] > reg[src_reg_b]) {
-      reg[0] = reg[src_reg];
+      reg[PC] = reg[src_reg];
     }
     break;
   }
-  case 0x09: {
+  case JPIS: {
     // std::cout << "jmpis" << std::endl;
-    reg[0]++;
-    char src_reg = program[reg[0]];
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
-    reg[0]++;
-    char src_reg_b = program[reg[0]];
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_b = program[reg[PC]];
     if (reg[src_reg_a] < reg[src_reg_b]) {
-      reg[0] = reg[src_reg];
+      reg[PC] = reg[src_reg];
     }
     break;
   }
-  case 0x0A: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
+  case INC: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
     reg[src_reg]++;
     break;
   }
-  case 0x0B: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
+  case DEC: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
     reg[src_reg]--;
     break;
   }
-  case 0x0C:
+  case NOP:
     break;
-  case 0x0D: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
-    reg[0]++;
-    char src_reg_b = program[reg[0]];
+  case JPINE: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_b = program[reg[PC]];
     if (reg[src_reg_a] == reg[src_reg_b]) {
-      reg[0] = reg[src_reg];
+      reg[PC] = reg[src_reg];
     }
     break;
   }
-  case 0x0E: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
+  case BITSL: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
     uint16_t shifted = reg[src_reg] >> 1;
     reg[src_reg] = shifted;
     break;
   }
-  case 0x0F: {
+  case HALT: {
     // std::cout << "halting" << std::endl;
     halted = true;
     break;
   }
-  case 0x10: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
+  case BITSR: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
     uint16_t shifted = reg[src_reg] << 1;
     reg[src_reg] = shifted;
     break;
   }
-  case 0x11: {
-    reg[0]++;
-    char src_reg = program[reg[0]];
-    reg[0x10] = reg[0];
-    reg[0] = reg[src_reg];
+  case CALL: {
+    reg[PC]++;
+    char src_reg = program[reg[PC]];
+    reg[RET_POS] = reg[PC];
+    reg[PC] = reg[src_reg];
     break;
   }
-  case 0x12:
-    reg[0] = reg[0x10];
+  case RET:
+    reg[PC] = reg[RET_POS];
     break;
-  case 0x13: {
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
-    reg[0]++;
-    char src_reg_b = program[reg[0]];
+  case REGSWAP: {
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_b = program[reg[PC]];
     uint16_t reg_a_prev = reg[src_reg_a];
     reg[src_reg_a] = reg[src_reg_b];
     reg[src_reg_b] = reg_a_prev;
@@ -333,28 +357,28 @@ void tick() {
               << "reb a: " << reg[src_reg_a] << std::endl;
     break;
   }
-  case 0x14: {
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
-    reg[0]++;
-    char src_reg_b = program[reg[0]];
-    reg[0x01] = reg[src_reg_a] * reg[src_reg_b];
+  case MUL: {
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_b = program[reg[PC]];
+    reg[AR] = reg[src_reg_a] * reg[src_reg_b];
     break;
   }
-  case 0x15: {
-    reg[0]++;
-    char src_reg_a = program[reg[0]];
-    reg[0]++;
-    char src_reg_b = program[reg[0]];
-    reg[0x01] = reg[src_reg_a] / reg[src_reg_b];
+  case DIV: {
+    reg[PC]++;
+    char src_reg_a = program[reg[PC]];
+    reg[PC]++;
+    char src_reg_b = program[reg[PC]];
+    reg[AR] = reg[src_reg_a] / reg[src_reg_b];
     break;
   }
   }
 
-  if (reg[0x09] != 0) {
-    char to_write = reg[0x09] & 0xFF;
+  if (reg[STDOUT] != 0) {
+    char to_write = reg[STDOUT] & 0xFF;
     std::cout << to_write << std::flush;
-    reg[0x09] = 0;
+    reg[STDOUT] = 0;
   }
 }
 
@@ -446,9 +470,9 @@ int main() {
       }
     }
     tick();
-    if (framecnt % 10 == 0) {
+    if (framecnt % 1 == 0) {
       draw();
-      SDL_Delay(16);
+      SDL_Delay(250);
       framecnt = 0;
     }
     framecnt++;
