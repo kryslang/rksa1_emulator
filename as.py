@@ -96,7 +96,7 @@ for i in f.readlines():
 	# print(buff[len(buff)-2],"maamamaa,mamamammammamm")
 	if buff[len(buff) - 1] == ":":
 		lablist.append(buff.replace(":", ""))
-		cordlist.append(orn + 1)
+		cordlist.append(orn)
 		# ~ f2.write((12).to_bytes(1, "big"))
 		# ~ print((12))
 		print(lablist, cordlist)
@@ -121,10 +121,11 @@ for i in f.readlines():
 	# ~ elif buffc1[0] == "'":
 		# ~ f2.write(bytes(buffc1[1], "utf-8"))
 	# ~ else:
-		# ~ for h in range(0, len(lablist)):
-			# ~ if buffc1 == lablist[h]:
-				# ~ if h > 19:
-					# ~ f2.write((cordlist[h] - 1).to_bytes(2, "big"))
+	for h in range(0, len(lablist)):
+		if buffc1 == lablist[h]:
+			if h > 19:
+				#f2.write((cordlist[h] - 1).to_bytes(2, "big"))
+				orn+=1
 				# ~ else:
 					# ~ f2.write((cordlist[h]).to_bytes(1, "big"))
 				# ~ print(buffc1, cordlist[h])
@@ -140,6 +141,11 @@ for i in f.readlines():
 			break
 	orn += 1
 	n += 1
+	for h in range(0, len(lablist)):
+		if buffc2 == lablist[h]:
+			if h > 19:
+				#f2.write((cordlist[h] - 1).to_bytes(2, "big"))
+				orn+=1
 	# ~ if buffc2[0] == "0":
 		# ~ f2.write(int(buffc2, 16).to_bytes(1, "big"))
 	# ~ elif buffc2[0] == "'":
@@ -164,6 +170,11 @@ for i in f.readlines():
 			break
 	orn += 1
 	n += 1
+	for h in range(0, len(lablist)):
+		if buffc3 == lablist[h]:
+			if h > 19:
+				#f2.write((cordlist[h] - 1).to_bytes(2, "big"))
+				orn+=1
 	# print(buffc3, inse)
 	# ~ if buffc3[0] == "0":
 		# ~ f2.write(int(buffc3, 16).to_bytes(1, "big"))
@@ -189,6 +200,11 @@ for i in f.readlines():
 			break
 	orn += 1
 	n += 1
+	for h in range(0, len(lablist)):
+		if buffc4 == lablist[h]:
+			if h > 19:
+				#f2.write((cordlist[h] - 1).to_bytes(2, "big"))
+				orn+=1
 	# print(buffc4, inse)
 	# ~ if buffc4[0] == "0":
 		# ~ f2.write(int(buffc4, 16).to_bytes(1, "big"))
