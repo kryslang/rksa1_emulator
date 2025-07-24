@@ -426,7 +426,7 @@ int main() {
     return -1;
   }
 
-  font = TTF_OpenFont("IntelOneMono.ttf", 24);
+  font = TTF_OpenFont("IntelOneMono.ttf", 18);
   if (!font) {
     SDL_Log("Chyba načtení fontu: %s", TTF_GetError());
     return 1;
