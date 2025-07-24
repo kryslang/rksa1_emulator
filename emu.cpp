@@ -23,8 +23,8 @@ char *ram;
 bool halted = false;
 bool arrowsPressed[5] = {0};
 
-const char *regnames[20] = {"PC",    "AR",      "res",   "res",   "REG_D",
-                            "REG_E", "REG_F",   "res",   "res",   "STDOUT",
+const char *regnames[20] = {"PC",    "AR",      "REG_I",   "REG_J",   "REG_D",
+                            "REG_E", "REG_F",   "REG_K",   "REG_L",   "STDOUT",
                             "REG_A", "REG_B",   "REG_C", "IPORT", "OPORT",
                             "FLAG",  "RET_POS", "REG_G", "REG_H", "RAMSIZE"};
 SDL_Renderer *renderer;
@@ -480,9 +480,9 @@ int main() {
       }
     }
     tick();
-    if (framecnt % 100 == 0) {
+    if (framecnt % 5000 == 0) {
       draw();
-      SDL_Delay(16);
+      SDL_Delay(10);
       framecnt = 0;
     }
     framecnt++;
