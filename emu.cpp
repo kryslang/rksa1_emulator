@@ -5,19 +5,16 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
-#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <random>
 #include <sstream>
 #include <stdint.h>
 #include <stdio.h>
 #include <string>
 #include <sys/types.h>
-#include <thread>
 
 int ram_size;
 uint16_t reg[20] = {0};
@@ -144,6 +141,14 @@ void draw() {
       SDL_RenderFillRect(renderer, &rect);
     }
   }
+  std::stringstream ss;
+  for (int i = 0; i < 8; i++) {
+    ss << std::to_string((uint16_t)ram[i]);
+    ss << " ";
+  }
+
+  renderFont(400, 570, font, {255, 255, 255, 255}, renderer, ss.str().c_str());
+
   if (halted) {
     renderFont(300, 10, font, {255, 0, 0, 255}, renderer, "Halted");
   }
@@ -311,7 +316,7 @@ void tick() {
     char src_reg_a = program[reg[PC]];
     reg[PC]++;
     char src_reg_b = program[reg[PC]];
-    if (reg[src_reg_a] == reg[src_reg_b]) {
+    if (reg[src_reg_a] != reg[src_reg_b]) {
       reg[PC] = reg[src_reg];
     }
     break;
@@ -470,9 +475,9 @@ int main() {
       }
     }
     tick();
-    if (framecnt % 1 == 0) {
+    if (framecnt % 30 == 0) {
       draw();
-      SDL_Delay(250);
+      SDL_Delay(16);
       framecnt = 0;
     }
     framecnt++;
