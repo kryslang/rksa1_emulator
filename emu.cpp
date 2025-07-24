@@ -21,7 +21,7 @@ uint16_t reg[20] = {0};
 const char *program;
 char *ram;
 bool halted = false;
-bool arrowsPressed[4] = {0};
+bool arrowsPressed[5] = {0};
 
 const char *regnames[20] = {"PC",    "AR",      "res",   "res",   "REG_D",
                             "REG_E", "REG_F",   "res",   "res",   "STDOUT",
@@ -159,7 +159,7 @@ uint16_t combine_chars(uint8_t high, uint8_t low) {
   return (static_cast<uint16_t>(high) << 8) | low;
 }
 
-inline std::string hex_last_2(const char &c) {
+std::string hex_last_2(const char &c) {
   std::stringstream ss;
   ss << std::setw(2) << std::setfill('0') << std::hex << int{c};
   return ss.str().substr(ss.str().size() - 2, ss.str().size());
@@ -185,19 +185,16 @@ void tick() {
 
   if (arrowsPressed[0]) {
     reg[IPORT] = 0x1111;
-  }
-  if (arrowsPressed[1]) {
+  } else if (arrowsPressed[1]) {
     reg[IPORT] = 0x2222;
-  }
-  if (arrowsPressed[2]) {
+  } else if (arrowsPressed[2]) {
     reg[IPORT] = 0x3333;
-  }
-  if (arrowsPressed[3]) {
+  } else if (arrowsPressed[3]) {
     reg[IPORT] = 0x4444;
-  }
-  if (!arrowsPressed[0] && !arrowsPressed[1] && !arrowsPressed[2] &&
-      !arrowsPressed[3]) {
-    reg[IPORT] = 0x00;
+  } else if (arrowsPressed[4]) {
+    reg[IPORT] = 0x5555;
+  } else {
+    reg[IPORT] = 0x0000;
   }
 
   switch (program[reg[PC]]) {
@@ -458,6 +455,9 @@ int main() {
         if (event.key.keysym.sym == SDLK_RIGHT) {
           arrowsPressed[3] = true;
         }
+        if (event.key.keysym.sym == SDLK_SPACE) {
+          arrowsPressed[4] = true;
+        }
       }
       if (event.type == SDL_KEYUP) {
         if (event.key.keysym.sym == SDLK_UP) {
@@ -472,10 +472,13 @@ int main() {
         if (event.key.keysym.sym == SDLK_RIGHT) {
           arrowsPressed[3] = false;
         }
+        if (event.key.keysym.sym == SDLK_SPACE) {
+          arrowsPressed[4] = false;
+        }
       }
     }
     tick();
-    if (framecnt % 30 == 0) {
+    if (framecnt % 100 == 0) {
       draw();
       SDL_Delay(16);
       framecnt = 0;
