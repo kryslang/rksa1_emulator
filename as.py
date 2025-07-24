@@ -94,6 +94,9 @@ for i in f.readlines():
 		if n >= len(i) - 1:
 			nextli = True
 			break
+	if buff[0] == ";":
+		print("zde")
+		continue
 	orn += 1
 	# print(buff,"hello")
 	# print(buff[len(buff)-2],"maamamaa,mamamammammamm")
@@ -116,6 +119,9 @@ for i in f.readlines():
 		if n >= len(i) - 1:
 			nextli = True
 			break
+	if buffc1[0] == ";":
+		print("zde")
+		continue
 	orn += 1
 	n += 1
 	# print(buffc1, inse)
@@ -152,6 +158,9 @@ for i in f.readlines():
 		if n >= len(i) - 1:
 			nextli = True
 			break
+	if buffc2[0] == ";":
+		print("zde")
+		continue
 	orn += 1
 	n += 1
 	if buffc2[0] == "0":
@@ -190,6 +199,9 @@ for i in f.readlines():
 		if n >= len(i) - 1:
 			nextli = True
 			break
+	if buffc3[0] == ";":
+		print("zde")
+		continue
 	orn += 1
 	n += 1
 	if buffc3[0] == "0":
@@ -229,6 +241,9 @@ for i in f.readlines():
 		if n >= len(i) - 1:
 			nextli = True
 			break
+	if buffc4[0] == ";":
+		print("zde")
+		continue
 	orn += 1
 	n += 1
 	if buffc4[0] == "0":
@@ -292,6 +307,9 @@ for i in f.readlines():
 	orn += 1
 	# print(buff,"hello")
 	# print(buff[len(buff)-2],"maamamaa,mamamammammamm")
+	if buff[0] == ";":
+		print("zde")
+		continue
 	if buff[len(buff) - 1] == ":":
 		#lablist.append(buff.replace(":", ""))
 		#cordlist.append(orn + 1)
@@ -314,6 +332,8 @@ for i in f.readlines():
 	orn += 1
 	n += 1
 	# print(buffc1, inse)
+	if buffc1[0] == ";":
+		continue
 	if buffc1[0] == "0":
 		f2.write(int(buffc1, 16).to_bytes(1, "big"))
 	elif buffc1[0] == "'":
@@ -338,6 +358,8 @@ for i in f.readlines():
 			break
 	orn += 1
 	n += 1
+	if buffc2[0] == ";":
+		continue
 	if buffc2[0] == "0":
 		f2.write(int(buffc2, 16).to_bytes(1, "big"))
 	elif buffc2[0] == "'":
@@ -362,6 +384,8 @@ for i in f.readlines():
 			break
 	orn += 1
 	n += 1
+	if buffc3[0] == ";":
+		continue
 	# print(buffc3, inse)
 	if buffc3[0] == "0":
 		f2.write(int(buffc3, 16).to_bytes(1, "big"))
@@ -387,6 +411,8 @@ for i in f.readlines():
 			break
 	orn += 1
 	n += 1
+	if buffc4[0] == ";":
+		continue
 	# print(buffc4, inse)
 	if buffc4[0] == "0":
 		f2.write(int(buffc4, 16).to_bytes(1, "big"))
