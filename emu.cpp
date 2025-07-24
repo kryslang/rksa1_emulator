@@ -123,21 +123,21 @@ void draw() {
     sprintf(reg_text, "%s %04X", regnames[i], reg[i]);
     renderFont(0, i * 24, font, {255, 255, 255, 255}, renderer, reg_text);
   }
-  renderFont(450, 300, font, {255, 255, 255, 255}, renderer,
+  renderFont(400, 540, font, {255, 255, 255, 255}, renderer,
              ("arrowkeys: " + std::to_string(arrowsPressed[0]) +
               std::to_string(arrowsPressed[1]) +
               std::to_string(arrowsPressed[2]) +
               std::to_string(arrowsPressed[3]))
                  .c_str());
-  SDL_Rect r = {449, 49, 258, 258};
+  SDL_Rect r = {267, 19, 514, 514};
   SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
   SDL_RenderDrawRect(renderer, &r);
   delete[] reg_text;
-  for (int y = 0; y < 256; y += 4) {
-    for (int x = 0; x < 256; x += 4) {
-      auto [r, g, b] = rgb323_to_rgb888(ram[(y / 4 * 64 + x / 4) + ram_size]);
+  for (int y = 0; y < 64; y++) {
+    for (int x = 0; x < 64; x++) {
+      auto [r, g, b] = rgb323_to_rgb888(ram[(y * 64 + x) + ram_size]);
       SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-      SDL_Rect rect = {x + 450, y + 50, 4, 4};
+      SDL_Rect rect = {x * 8 + 268, y * 8 + 20, 8, 8};
       SDL_RenderFillRect(renderer, &rect);
     }
   }
@@ -150,7 +150,9 @@ void draw() {
   renderFont(400, 570, font, {255, 255, 255, 255}, renderer, ss.str().c_str());
 
   if (halted) {
-    renderFont(300, 10, font, {255, 0, 0, 255}, renderer, "Halted");
+    renderFont(0, 560, font, {255, 0, 0, 255}, renderer, "Halted: true");
+  }else{
+    renderFont(0, 560, font, {0, 255, 0, 255}, renderer, "Halted: false");
   }
   SDL_RenderPresent(renderer);
 }
