@@ -5,6 +5,7 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
+#include <SDL2/SDL_image.h>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -27,6 +28,7 @@ bool arrowsPressed[5] = {0};
 uint64_t clocks = 0;
 uint64_t old_clocks = 0;
 uint64_t hz = 0;
+SDL_Surface *icon=IMG_Load("icon.png");
 
 const char *regnames[20] = {"PC",    "AR",      "REG_I", "REG_J", "REG_D",
                             "REG_E", "REG_F",   "REG_K", "REG_L", "STDOUT",
@@ -430,7 +432,7 @@ int main() {
     SDL_Quit();
     return -1;
   }
-
+  SDL_SetWindowIcon(window, icon);
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
   if (!renderer) {
@@ -495,9 +497,10 @@ int main() {
         }
       }
     }
-    for (int i = 0; i < 50000; i++) {
+    for (int i = 0; i < 1000; i++) {
       tick();
       clocks++;
+      //SDL_Delay(10);
     }
     draw();
     SDL_Delay(10);
