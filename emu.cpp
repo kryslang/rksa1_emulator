@@ -1,11 +1,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
-#include <SDL2/SDL_image.h>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -28,7 +29,6 @@ bool arrowsPressed[5] = {0};
 uint64_t clocks = 0;
 uint64_t old_clocks = 0;
 uint64_t hz = 0;
-SDL_Surface *icon=IMG_Load("icon.png");
 
 const char *regnames[20] = {"PC",    "AR",      "REG_I", "REG_J", "REG_D",
                             "REG_E", "REG_F",   "REG_K", "REG_L", "STDOUT",
@@ -374,8 +374,6 @@ void tick() {
     uint16_t reg_a_prev = reg[src_reg_a];
     reg[src_reg_a] = reg[src_reg_b];
     reg[src_reg_b] = reg_a_prev;
-    std::cout << "a prev: " << reg_a_prev << " reg b: " << reg[src_reg_b]
-              << "reb a: " << reg[src_reg_a] << std::endl;
     break;
   }
   case MUL: {
@@ -416,6 +414,8 @@ int main() {
     return -1;
   }
 
+  IMG_Init(IMG_INIT_PNG);
+
   if (TTF_Init() < 0) {
     std::cerr << "TTF could not initialize! TTF_Error: " << TTF_GetError()
               << std::endl;
@@ -432,7 +432,7 @@ int main() {
     SDL_Quit();
     return -1;
   }
-  SDL_SetWindowIcon(window, icon);
+
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
   if (!renderer) {
@@ -449,7 +449,9 @@ int main() {
     return 1;
   }
 
-  // SDL_Delay(100);
+  SDL_Surface *icon = IMG_Load("icon.png");
+
+  SDL_SetWindowIcon(window, icon);
 
   SDL_Event event;
 
@@ -497,18 +499,19 @@ int main() {
         }
       }
     }
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 10000; i++) {
       tick();
       clocks++;
-      //SDL_Delay(10);
     }
     draw();
-    SDL_Delay(10);
+    // SDL_Delay(10);
   }
 
   draw();
 
-  SDL_Delay(5000);
+  SDL_Delay(500);
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
+  exit(0);
+  return 0;
 }
