@@ -401,11 +401,16 @@ void tick() {
   }
 }
 
-int main() {
+int main(int argc, char **argv) {
+  if (argc != 3) {
+    std::cout << "fake" << std::endl;
+    return 0;
+  }
+
   ram_size = 1024;
   ram = new char[ram_size + 4096]();
 
-  std::string programstr = readFileToString("flash.bin");
+  std::string programstr = readFileToString(argv[1]);
   program = programstr.c_str();
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -459,6 +464,8 @@ int main() {
 
   reg[19] = ram_size;
 
+  int speed = std::stoi(argv[2], 0, 10);
+
   while (!halted) {
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) {
@@ -499,12 +506,11 @@ int main() {
         }
       }
     }
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < speed; i++) {
       tick();
       clocks++;
     }
     draw();
-    // SDL_Delay(10);
   }
 
   draw();
