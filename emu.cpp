@@ -5,6 +5,7 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
@@ -15,6 +16,7 @@
 #include <stdio.h>
 #include <string>
 #include <sys/types.h>
+#include <thread>
 
 int ram_size;
 uint16_t reg[20] = {0};
@@ -22,9 +24,12 @@ const char *program;
 char *ram;
 bool halted = false;
 bool arrowsPressed[5] = {0};
+uint64_t clocks = 0;
+uint64_t old_clocks = 0;
+uint64_t hz = 0;
 
-const char *regnames[20] = {"PC",    "AR",      "REG_I",   "REG_J",   "REG_D",
-                            "REG_E", "REG_F",   "REG_K",   "REG_L",   "STDOUT",
+const char *regnames[20] = {"PC",    "AR",      "REG_I", "REG_J", "REG_D",
+                            "REG_E", "REG_F",   "REG_K", "REG_L", "STDOUT",
                             "REG_A", "REG_B",   "REG_C", "IPORT", "OPORT",
                             "FLAG",  "RET_POS", "REG_G", "REG_H", "RAMSIZE"};
 SDL_Renderer *renderer;
@@ -77,6 +82,14 @@ enum ops {
   DIV = 21
 };
 
+void updateHz() {
+  while (true) {
+    hz = clocks - old_clocks;
+    old_clocks = clocks;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+}
+
 std::tuple<uint8_t, uint8_t, uint8_t> rgb323_to_rgb888(uint8_t rgb323) {
   // Vytáhneme jednotlivé komponenty
   uint8_t r3 = (rgb323 >> 5) & 0x07; // 3 bity (R)
@@ -123,6 +136,8 @@ void draw() {
     sprintf(reg_text, "%s %04X", regnames[i], reg[i]);
     renderFont(0, i * 24, font, {255, 255, 255, 255}, renderer, reg_text);
   }
+  renderFont(200, 570, font, {255, 255, 255, 255}, renderer,
+             (std::to_string(hz / 1000) + "kHz").c_str());
   renderFont(400, 540, font, {255, 255, 255, 255}, renderer,
              ("arrowkeys: " + std::to_string(arrowsPressed[0]) +
               std::to_string(arrowsPressed[1]) +
@@ -151,7 +166,7 @@ void draw() {
 
   if (halted) {
     renderFont(0, 560, font, {255, 0, 0, 255}, renderer, "Halted: true");
-  }else{
+  } else {
     renderFont(0, 560, font, {0, 255, 0, 255}, renderer, "Halted: false");
   }
   SDL_RenderPresent(renderer);
@@ -435,7 +450,8 @@ int main() {
   // SDL_Delay(100);
 
   SDL_Event event;
-  uint16_t framecnt;
+
+  std::thread updateHzThread(updateHz);
 
   reg[19] = ram_size;
 
@@ -479,13 +495,12 @@ int main() {
         }
       }
     }
-    tick();
-    if (framecnt % 5000 == 0) {
-      draw();
-      SDL_Delay(10);
-      framecnt = 0;
+    for (int i = 0; i < 50000; i++) {
+      tick();
+      clocks++;
     }
-    framecnt++;
+    draw();
+    SDL_Delay(10);
   }
 
   draw();
