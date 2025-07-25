@@ -1,0 +1,9 @@
+./main triangle.bin 20
+./main moving.bin 100000
+./main lines.bin 5000
+./main lines.bin 5000
+./main prokop.bin 100
+./main tom.bin 100
+./main janek.bin 100
+./main marian.bin 100
+./main michal.bin 100
